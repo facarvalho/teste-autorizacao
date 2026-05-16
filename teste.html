@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Geolocalização</title>
+</head>
+<body>
+  <h2>Teste de Geolocalização</h2>
+  <button id="autorizar">Autorizar</button>
+
+  <script>
+    document.getElementById("autorizar").addEventListener("click", async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const latitude = pos.coords.latitude;
+          const longitude = pos.coords.longitude;
+
+          // Buscar IP público dinamicamente
+          let ip_publico = "";
+          try {
+            const ipResp = await fetch("https://api64.ipify.org?format=json");
+            const ipData = await ipResp.json();
+            ip_publico = ipData.ip;
+          } catch (err) {
+            console.error("Erro ao obter IP:", err);
+            ip_publico = "0.0.0.0"; // fallback
+          }
+
+          const payload = {
+            id_cliente: 998165,
+            latitude: latitude,
+            longitude: longitude,
+            ip_publico: ip_publico,
+            produto: 12,
+            numero_beneficio: "1810374038",
+            origin: "https://formalizacao.happyconsig.com.br"
+          };
+
+          try {
+            const response = await fetch("https://backoffice.happyconsig.com.br/api/assinar-in100/", {
+              method: "POST",
+              headers: {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "origin": "https://formalizacao.happyconsig.com.br",
+                "referer": "https://formalizacao.happyconsig.com.br/"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            console.log("Resposta da API:", data);
+            alert("Chamada realizada com sucesso!");
+          } catch (err) {
+            console.error("Erro na chamada:", err);
+            alert("Erro ao chamar API");
+          }
+        });
+      } else {
+        alert("Geolocalização não suportada neste navegador.");
+      }
+    });
+
+
+    fetch("https://backoffice.happyconsig.com.br/api/assinar-in100/", {
+  method: "POST",
+  headers: {
+    "accept": "application/json",
+    "accept-language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "content-type": "application/json",
+    "origin": "https://formalizacao.happyconsig.com.br",
+    "priority": "u=1, i",
+    "referer": "https://formalizacao.happyconsig.com.br/",
+    "sec-ch-ua": "\"Chromium\";v=\"148\", \"Microsoft Edge\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0"
+  },
+  body: JSON.stringify({
+    id_cliente: 998165,
+    latitude: -23.59116746360545,
+    longitude: -46.68661216219246,
+    ip_publico: "163.116.233.96",
+    produto: 12,
+    numero_beneficio: "1810374038",
+    origin: "https://formalizacao.happyconsig.com.br"
+  })
+})
+.then(res => res.json())
+.then(data => console.log("Resposta da API:", data))
+.catch(err => console.error("Erro:", err));
+
+  </script>
+</body>
+</html>
